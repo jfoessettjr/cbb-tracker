@@ -12,6 +12,19 @@ app = FastAPI(title="CBB Tracker", version="0.1.0")
 
 Base.metadata.create_all(bind=engine)
 
+@app.get("/")
+def root():
+    return {
+        "name": "CBB Tracker API",
+        "docs": "/docs",
+        "try": {
+            "POST update": "/admin/update?dates=YYYYMMDD-YYYYMMDD",
+            "GET teams": "/teams",
+            "GET games": "/games?game_date=YYYY-MM-DD",
+        },
+    }
+
+
 
 def _default_dates_range() -> str:
     # Default: today (UTC) and yesterday (UTC) to catch late-night games cleanly
