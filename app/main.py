@@ -59,6 +59,26 @@ async def admin_update(background_tasks: BackgroundTasks, dates: str | None = No
     return {"queued": True, "dates": dates}
 
 
+@app.post("/admin/update_sync")
+async def admin_update_sync(dates: str | None = None):
+    """
+    Runs ingestion synchronously and returns the ingest stats immediately.
+    Use this while developing/debugging.
+    """
+    dates = dates or _default_dates_range()
+    payload = await fetch_scoreboard(dates=dates)
+
+    from .db import SessionLocal
+    db = SessionLocal()
+    try:
+        stats = ingest_scoreboard_json(db, payload)
+    finally:
+        db.close()
+
+    return {"dates": dates, "stats": stats}
+
+
+
 @app.get("/teams")
 def list_teams(db: Session = Depends(get_db)):
     teams = db.execute(select(Team).order_by(Team.name.asc())).scalars().all()
