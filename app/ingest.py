@@ -74,11 +74,12 @@ def upsert_game(
             away_score=away_score,
             status=status,
             neutral_site=neutral_site,
+            elo_applied=False,
         )
         db.add(game)
         return game
 
-    # Update existing
+    # Update existing (DO NOT reset elo_applied)
     game.start_time_utc = start_time_utc
     game.date_key = date_key
     game.home_team_id = home_team.id
@@ -88,6 +89,7 @@ def upsert_game(
     game.status = status
     game.neutral_site = neutral_site
     return game
+
 
 
 def ingest_scoreboard_json(db: Session, payload: dict[str, Any]) -> dict[str, int]:
